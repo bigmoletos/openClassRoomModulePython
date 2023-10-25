@@ -2,7 +2,8 @@ import requests
 import csv, json
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
-from methodes_de_controle import controle_saisie_nom_fichier, controle_saisie_url
+# from methodes_de_controle import controle_saisie_nom_fichier, controle_saisie_url
+from methodes_de_controle import *
 
 def scrapp_page_web():
     """ copie le contenu d'une page web et le copie dans un fichier output.html
@@ -24,7 +25,7 @@ tapez votre choix:    """
             my_choice_type_fichier=input(menu_input)
 
             # Demander à l'utilisateur l'URL de la page web à scraper
-            url=controle_saisie_url
+            url=controle_saisie_url()
             # url = input("Veuillez entrer l'URL de la page web à scraper (par défaut https://www.google.com) : ")
             # if url == '':
             #     url = "https://www.google.com"
