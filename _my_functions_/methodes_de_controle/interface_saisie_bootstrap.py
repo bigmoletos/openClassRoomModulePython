@@ -1,4 +1,5 @@
 import os
+"""classe permettant d'enregistrer"""
 import tkinter as tk
 from tkinter import messagebox, filedialog
 from ttkbootstrap import Style
@@ -29,6 +30,37 @@ class EnregistreurFichier:
         self.donnees = donnees
         self.repertoire=repertoire
 
+    # def enregistrer(self):
+    #     """Enregistre les données dans un fichier."""
+    #     extension = os.path.splitext(self.chemin)[1]
+    #     sous_repertoire = os.path.join(self.repertoire, extension.lstrip('.'))
+    #     os.makedirs(sous_repertoire, exist_ok=True)
+    #     chemin_complet = os.path.join(sous_repertoire, os.path.basename(self.chemin))
+
+    #     if extension == '.txt':
+    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
+    #             f.write(self.donnees)
+    #     elif extension == '.csv':
+    #         with open(chemin_complet, 'w', newline='', encoding='utf-8') as f:
+    #             writer = csv.writer(f)
+    #             writer.writerow(self.donnees.keys())
+    #             writer.writerow(self.donnees.values())
+    #     elif extension == '.json':
+    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
+    #             json.dump(self.donnees, f, ensure_ascii=False)
+    #     elif extension == '.xml':
+    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
+    #             f.write(dicttoxml(self.donnees).decode())
+    #     elif extension == '.xlsx':
+    #         df = pd.DataFrame([self.donnees])
+    #         df.to_excel(chemin_complet, index=False)
+    #     elif extension == '.pdf':
+    #         pdf = FPDF()
+    #         pdf.add_page()
+    #         pdf.set_font("Arial", size=12)
+    #         for i, (key, val) in enumerate(self.donnees.items()):
+    #             pdf.cell(200, 10, txt=f"{key}: {val}", ln=i+1, align='C')
+    #         pdf.output(chemin_complet)
     def enregistrer(self):
         """Enregistre les données dans un fichier."""
         extension = os.path.splitext(self.chemin)[1]
@@ -36,31 +68,35 @@ class EnregistreurFichier:
         os.makedirs(sous_repertoire, exist_ok=True)
         chemin_complet = os.path.join(sous_repertoire, os.path.basename(self.chemin))
 
-        if extension == '.txt':
+
+        if extension == 'txt':
             with open(chemin_complet, 'w', encoding='utf-8') as f:
-                f.write(self.donnees)
-        elif extension == '.csv':
+                for cle, valeur in self.donnees.items():
+                    f.write(f"{cle}: {valeur}\n")
+        elif extension == 'csv':
             with open(chemin_complet, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.writer(f)
-                writer.writerow(self.donnees.keys())
-                writer.writerow(self.donnees.values())
-        elif extension == '.json':
+                ecrivain = csv.writer(f)
+                ecrivain.writerow(self.donnees.keys())
+                ecrivain.writerow(self.donnees.values())
+        elif extension == 'json':
             with open(chemin_complet, 'w', encoding='utf-8') as f:
                 json.dump(self.donnees, f, ensure_ascii=False)
-        elif extension == '.xml':
+        elif extension == 'xml':
             with open(chemin_complet, 'w', encoding='utf-8') as f:
                 f.write(dicttoxml(self.donnees).decode())
-        elif extension == '.xlsx':
+        elif extension == 'xlsx':
             df = pd.DataFrame([self.donnees])
             df.to_excel(chemin_complet, index=False)
-        elif extension == '.pdf':
+        elif extension == 'pdf':
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", size=12)
-            for i, (key, val) in enumerate(self.donnees.items()):
-                pdf.cell(200, 10, txt=f"{key}: {val}", ln=i+1, align='C')
+            for i, (cle, val) in enumerate(self.donnees.items()):
+                pdf.cell(200, 10, txt=f"{cle}: {val}", ln=i+1, align='C')
             pdf.output(chemin_complet)
-        
+        elif extension == 'html':
+            df = pd.DataFrame([self.donnees])
+            df.to_html(chemin_complet)    
 
 class Application(tk.Tk, metaclass=SingletonMeta):
     """Application pour la saisie des informations."""
@@ -110,11 +146,10 @@ class Application(tk.Tk, metaclass=SingletonMeta):
         frame_extensions_a_exclure.pack(fill='x', pady=10)
         label_extensions_a_exclure = tk.Label(
             frame_extensions_a_exclure, text="Extensions à exclure", bg='white')
-# suite
         label_extensions_a_exclure.pack(side='left')
         self.extensions_a_exclure = tk.Listbox(
             frame_extensions_a_exclure, selectmode='multiple')
-        for item in ['.txt', '.py', '.csv', '.xml', '.json', '.xlsx', '.pdf']:
+        for item in ['.txt', '.py', '.csv', '.xml', '.json', '.xlsx', '.html','.pdf']:
             self.extensions_a_exclure.insert('end', item)
         self.extensions_a_exclure.pack(side='right', fill='x', expand=True)
 
@@ -126,7 +161,7 @@ class Application(tk.Tk, metaclass=SingletonMeta):
         label_format_fichier.pack(side='left')
         self.format_fichier_var = tk.StringVar()
         liste_deroulante_format_fichier = tk.OptionMenu(frame_format_fichier, self.format_fichier_var,
-                                                        '.txt', '.py', '.csv', '.xml', '.json', '.pdf', '.xlsx')
+                                                        '.txt', '.py', '.csv', '.xml',  '.html','.json', '.pdf', '.xlsx')
         liste_deroulante_format_fichier.pack(
             side='right', fill='x', expand=True)
 

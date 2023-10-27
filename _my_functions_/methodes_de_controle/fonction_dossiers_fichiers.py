@@ -59,7 +59,7 @@ class InformationsProjet(metaclass=SingletonMeta):
             repertoire_courant = os.getcwd()
             noms_fichiers = []
             for chemin, _, fichiers_dans_repertoire in os.walk(repertoire_courant):
-                if any(element in chemin.encode('utf-8') for element in self.repertoires_ignores):
+                if any(element in chemin for element in self.repertoires_ignores):
                     continue
                 for nom_fichier in fichiers_dans_repertoire:
                     if not nom_fichier.startswith('.'):
@@ -69,15 +69,25 @@ class InformationsProjet(metaclass=SingletonMeta):
         except Exception as e:
             print(Fore.RED + "Erreur lors de l'obtention des fichiers dans le répertoire : ", e)
 
+
+    # def obtenir_dossiers_repertoire_travail(self):
+    #     """Obtient la liste des dossiers dans le répertoire de travail."""
+    #     try:
+    #         repertoire_travail = os.getcwd()
+    #         dossiers = [nom for nom in os.listdir(repertoire_travail)
+    #                     if os.path.isdir(os.path.join(repertoire_travail, nom))]
+    #         return dossiers
+    #     except Exception as e:
+    #         print(Fore.RED + "Erreur lors de l'obtention des dossiers dans le répertoire de travail : ", e)
     def obtenir_dossiers_repertoire_travail(self):
         """Obtient la liste des dossiers dans le répertoire de travail."""
         try:
             repertoire_travail = os.getcwd()
-            dossiers = [nom for nom in os.listdir(repertoire_travail)
-                        if os.path.isdir(os.path.join(repertoire_travail, nom))]
+            with os.scandir(repertoire_travail) as entries:
+                dossiers = [entry.name for entry in entries if entry.is_dir()]
             return dossiers
         except Exception as e:
-            print(Fore.RED + "Erreur lors de l'obtention des dossiers dans le répertoire de travail : ", e)
+            print(Fore.RED + "Erreur lors de l'obtention des dossiers dans le répertoire de travail : ", str(e))
 
     def obtenir_fichiers_python_sans_ext(self):
         """Obtient la liste des fichiers Python sans extension."""
@@ -85,4 +95,5 @@ class InformationsProjet(metaclass=SingletonMeta):
             fichiers_python_sans_ext = [os.path.basename(f)[:-3] for f in glob.glob(os.path.dirname(__file__) + "/*.py")]
             return fichiers_python_sans_ext
         except Exception as e:
-            print(Fore.RED + "Erreur lors de l'obtention des fichiers Python sans extension : ", e)
+            print(Fore.RED + "Erreur lors de l'obtention des fichiers Python sans extension : ", str(e))
+

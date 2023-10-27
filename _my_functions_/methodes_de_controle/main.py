@@ -1,4 +1,5 @@
-from informations_projet import InformationsProjet
+from fonction_dossiers_fichiers import InformationsProjet
+
 
 def main():
     # Créer une instance de la classe InformationsProjet
