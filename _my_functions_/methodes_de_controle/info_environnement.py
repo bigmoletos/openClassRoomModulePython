@@ -121,29 +121,7 @@ print("*"*50)
 list_python_files_without_ext.remove('__init__')
 
 print("*"*50)
-def lister_dossiers(chemin, repertoires_ignores):
-    """
-    Liste les dossiers dans un chemin donné, en ignorant certains répertoires spécifiques.
-    
-    Args:
-        chemin (str): Le chemin du répertoire à analyser.
-        repertoires_ignores (list): La liste des noms de répertoires à ignorer.
-        
-    Returns:
-        list: La liste des noms de dossiers dans le chemin donné, sans les répertoires ignorés.
-    """
-    noms_dossiers = []
-    for chemin_courant, dossiers, fichiers in os.walk(chemin):
-        dossiers[:] = [d for d in dossiers if d not in repertoires_ignores]
-        noms_dossiers.extend(dossiers)
-    return noms_dossiers
-
-# Liste des répertoires à ignorer
-repertoires_ignores = ['.git', '.vscode']
-
-# Appel de la fonction
-print(lister_dossiers('.', repertoires_ignores))
-print("*"*50)
+print("*##*"*25, "via fonction lister_fichiers(chemin, repertoires_ignores)","*#*"*25)
 def lister_fichiers(chemin, repertoires_ignores):
     """
     Liste les fichiers dans un chemin donné, en ignorant certains répertoires spécifiques.
@@ -156,14 +134,23 @@ def lister_fichiers(chemin, repertoires_ignores):
         list: La liste des noms de fichiers dans le chemin donné, sans les fichiers des répertoires ignorés.
     """
     noms_fichiers = []
+    noms_dossiers = []
+    # chemin_courant = []
     for chemin_courant, dossiers, fichiers in os.walk(chemin):
         dossiers[:] = [d for d in dossiers if d not in repertoires_ignores]
         noms_fichiers.extend(fichiers)
-    return noms_fichiers
+        noms_dossiers.extend(dossiers)
+        # chemin_courant+=chemin_courant
+        # chemin_courant.extend(chemin_courant)
+    return  print("liste fichiers:\n", noms_fichiers, "taille: " ,len(noms_fichiers),
+                  "\nliste dossiers: \n",noms_dossiers,"taille: " ,len(noms_dossiers),
+                  "\nchemin_courant :", chemin_courant ,
+                  "\n")
 
 # Liste des répertoires à ignorer
-repertoires_ignores = ['.git', '.vscode']
-
+repertoires_ignores = ['.git', '.vscode','__pycache__','__init__']
+chemin_dossiers='.'
 # Appel de la fonction
-print(lister_fichiers('.', repertoires_ignores))
+print(lister_fichiers(chemin_dossiers, repertoires_ignores))
+print("*##*"*25, "via fonction lister_fichier ","*#*"*25)
 print("-"*50)
