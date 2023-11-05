@@ -1,14 +1,16 @@
 import os
-"""classe permettant d'enregistrer"""
 import tkinter as tk
 from tkinter import messagebox, filedialog
-from ttkbootstrap import Style
+from ttkbootstrap import Style as ttkb
+from ttkbootstrap import ttk
+from ttkbootstrap.constants import *
 from datetime import datetime
 import csv
 import json
 import pandas as pd
 from dicttoxml import dicttoxml
 from fpdf import FPDF
+"""classe permettant d'enregistrer"""
 
 
 class SingletonMeta(type):
@@ -30,37 +32,6 @@ class EnregistreurFichier:
         self.donnees = donnees
         self.repertoire=repertoire
 
-    # def enregistrer(self):
-    #     """Enregistre les données dans un fichier."""
-    #     extension = os.path.splitext(self.chemin)[1]
-    #     sous_repertoire = os.path.join(self.repertoire, extension.lstrip('.'))
-    #     os.makedirs(sous_repertoire, exist_ok=True)
-    #     chemin_complet = os.path.join(sous_repertoire, os.path.basename(self.chemin))
-
-    #     if extension == '.txt':
-    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
-    #             f.write(self.donnees)
-    #     elif extension == '.csv':
-    #         with open(chemin_complet, 'w', newline='', encoding='utf-8') as f:
-    #             writer = csv.writer(f)
-    #             writer.writerow(self.donnees.keys())
-    #             writer.writerow(self.donnees.values())
-    #     elif extension == '.json':
-    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
-    #             json.dump(self.donnees, f, ensure_ascii=False)
-    #     elif extension == '.xml':
-    #         with open(chemin_complet, 'w', encoding='utf-8') as f:
-    #             f.write(dicttoxml(self.donnees).decode())
-    #     elif extension == '.xlsx':
-    #         df = pd.DataFrame([self.donnees])
-    #         df.to_excel(chemin_complet, index=False)
-    #     elif extension == '.pdf':
-    #         pdf = FPDF()
-    #         pdf.add_page()
-    #         pdf.set_font("Arial", size=12)
-    #         for i, (key, val) in enumerate(self.donnees.items()):
-    #             pdf.cell(200, 10, txt=f"{key}: {val}", ln=i+1, align='C')
-    #         pdf.output(chemin_complet)
     def enregistrer(self):
         """Enregistre les données dans un fichier."""
         extension = os.path.splitext(self.chemin)[1]
@@ -104,11 +75,15 @@ class Application(tk.Tk, metaclass=SingletonMeta):
     def __init__(self):
         super().__init__()
         self.title("Saisie des informations")
-        self.style = Style('superhero')
+        # self.style = ttk.Style(theme='cyborg')
+        # self.style = Style(theme='superhero')
+        # self.style = ttkb(theme='superhero')
+        self.style = ttkb(theme='darkly')
         self.style.theme_use()
+        fenetre_style = self.style.master
 
         # Centrer la fenêtre et ajouter des marges
-        self.geometry("800x800")
+        self.geometry("500x850")
         self.configure(bg='white')
         self.pack_propagate(False)
 
@@ -135,45 +110,111 @@ class Application(tk.Tk, metaclass=SingletonMeta):
             entry.pack(side='right', fill='x', expand=True)
             self.entries[champ] = entry
 
+        # default separator style
+        separateur=ttk.Separator(cadre,orient='horizontal',bootstyle="info")
+        # info colored separator style - handle color
+        separateur.pack(fill='x')
+        # Créer la liste déroulante pour les extensions à exclure
+        frame_extensions_a_exclure = tk.Frame(cadre, bg='white')
+        frame_extensions_a_exclure.pack(fill='x',padx=20, pady=10)
+        label_extensions_a_exclure = tk.Label(
+            frame_extensions_a_exclure, text="Extensions à exclure", bg='white')
+        label_extensions_a_exclure.pack(side='left')
+
+        liste_extensions_a_exclure=['.txt', '.py', '.csv', '.xml', '.json', '.xlsx', '.html','.pdf']
+        max_length = max(len(extensions_a_exclure) for extensions_a_exclure in liste_extensions_a_exclure)+2
+        self.extensions_a_exclure = tk.Listbox(
+            frame_extensions_a_exclure, selectmode='multiple', height=len(liste_extensions_a_exclure), width=max_length)
+        for item in liste_extensions_a_exclure:
+            self.extensions_a_exclure.insert('end', item)
+        self.extensions_a_exclure.pack(side='right', fill=None, expand=False)
+
+        # default separator style
+        separateur=ttk.Separator(cadre,orient='horizontal',bootstyle="info")
+        # info colored separator style - handle color
+        separateur.pack(fill='x')
+
+        # # Créer la liste déroulante pour le format du fichier à enregistrer
+        # frame_format_fichier = tk.Frame(cadre, bg='white')
+        # frame_format_fichier.pack(fill='x',padx=10, pady=10)
+        # label_format_fichier = tk.Label(
+        #     frame_format_fichier, text="Format du fichier", bg='white')
+        # label_format_fichier.pack(side='left')
+        # self.format_fichier_var = tk.StringVar()
+        # liste_deroulante_format_fichier = tk.OptionMenu(frame_format_fichier, self.format_fichier_var,
+        #                                                 '.txt', '.py', '.csv', '.xml',  '.html','.json', '.pdf', '.xlsx')
+        # # Définir la largeur de la liste déroulante
+        # liste_deroulante_format_fichier.config(width=20, height=50)
+        # liste_deroulante_format_fichier.pack(
+        #     side='left', fill=None, expand=False)
+        # Créez un cadre pour la liste
+        frame_format_fichier = tk.Frame(cadre, bg='white')
+        frame_format_fichier.pack(fill='x', padx=10, pady=10)
+
+        # Créez un label pour la liste
+        label_format_fichier = tk.Label(frame_format_fichier, text="Format du fichier", bg='white')
+        label_format_fichier.pack(side='left')
+
+        # Créez une Listbox pour les formats de fichiers, au passage pour eviter d'avoir les lignes vides 
+        # à la fin on limite le height au nombre d'entrées dans la liste
+        formats_fichier = ['.txt', '.py', '.csv', '.xml',  '.html','.json', '.pdf', '.xlsx']
+        # Obtenez la longueur de l'élément le plus long dans la liste pour limiter la taille de la fenetre
+        max_length = max(len(format_fichier) for format_fichier in formats_fichier)+2
+        # Créez une Listbox pour les formats de fichiers avec une hauteur égale au nombre d'éléments dans la liste
+        liste_formats_fichier = tk.Listbox(frame_format_fichier, height=len(formats_fichier), width=max_length)
+        liste_formats_fichier.pack(side='left', fill='both', expand=False)
+
+        for format_fichier in formats_fichier:
+            liste_formats_fichier.insert(tk.END, format_fichier)
+
+        # default separator style
+        separateur=ttk.Separator(cadre,orient='horizontal',bootstyle="info")
+        # info colored separator style - handle color
+        separateur.pack(fill='x')
+
         # Créer la checkbox pour les conditions contractuelles
         self.conditions_var = tk.BooleanVar()
         checkbox = tk.Checkbutton(cadre, text="J'accepte les conditions contractuelles", variable=self.conditions_var,
                                   bg='white')
         checkbox.pack()
-
-        # Créer la liste déroulante pour les extensions à exclure
-        frame_extensions_a_exclure = tk.Frame(cadre, bg='white')
-        frame_extensions_a_exclure.pack(fill='x', pady=10)
-        label_extensions_a_exclure = tk.Label(
-            frame_extensions_a_exclure, text="Extensions à exclure", bg='white')
-        label_extensions_a_exclure.pack(side='left')
-        self.extensions_a_exclure = tk.Listbox(
-            frame_extensions_a_exclure, selectmode='multiple')
-        for item in ['.txt', '.py', '.csv', '.xml', '.json', '.xlsx', '.html','.pdf']:
-            self.extensions_a_exclure.insert('end', item)
-        self.extensions_a_exclure.pack(side='right', fill='x', expand=True)
-
-        # Créer la liste déroulante pour le format du fichier à enregistrer
-        frame_format_fichier = tk.Frame(cadre, bg='white')
-        frame_format_fichier.pack(fill='x', pady=10)
-        label_format_fichier = tk.Label(
-            frame_format_fichier, text="Format du fichier", bg='white')
-        label_format_fichier.pack(side='left')
-        self.format_fichier_var = tk.StringVar()
-        liste_deroulante_format_fichier = tk.OptionMenu(frame_format_fichier, self.format_fichier_var,
-                                                        '.txt', '.py', '.csv', '.xml',  '.html','.json', '.pdf', '.xlsx')
-        liste_deroulante_format_fichier.pack(
-            side='right', fill='x', expand=True)
-
+        # default separator style
+        separateur=ttk.Separator(cadre,orient='horizontal',bootstyle="info")
+        # info colored separator style - handle color
+        separateur.pack(fill='x')
         # Créer les boutons OK et Annuler
-        frame_boutons = tk.Frame(cadre, bg='white')
-        frame_boutons.pack(fill='x', pady=10)
-        bouton_ok = tk.Button(frame_boutons, text="OK",
-                              command=self.valider, bg='green')
-        bouton_ok.pack(side='left')
-        bouton_annuler = tk.Button(
-            frame_boutons, text="Annuler", command=self.annuler, bg='orange')
-        bouton_annuler.pack(side='right')
+        # # default style
+        ttk.Button()
+        # # Créez un cadre principal
+        # voir plus haut la defintition du cadre
+        # cadre = tk.Frame(bg='white')
+
+        # # success style
+        # Créez un cadre pour les boutons
+        fenetre_style = tk.Frame(cadre, bg='red')
+        # Créez un bouton OK dans le cadre des boutons
+        bouton_succes=ttk.Button(fenetre_style, text="OK", command=self.valider, style=SUCCESS )
+        bouton_succes.pack(side=LEFT,padx=10, pady=10)
+        # Créez un bouton CANCEL dans le cadre des boutons
+        bouton_cancel=ttk.Button(fenetre_style, text="ANNULER",command=self.annuler, style=DANGER )
+        bouton_cancel.pack(side=RIGHT,padx=10, pady=10)
+        # Ajoutez le cadre du style au cadre principal
+        fenetre_style.pack(fill='x', pady=10)
+
+        # frame_boutons = tk.Frame(cadre, bg='white')
+        # frame_boutons.pack(fill='x', pady=10)
+
+        # Ajoutez le cadre du style au cadre principal
+        # fenetre_style.pack()
+
+        # Affichez le cadre principal
+        # cadre.pack()
+
+        # bouton_ok = tk.Button(frame_boutons, text="OK", command=self.valider, bg='red')
+        # bouton_ok.pack(side='left')
+        # bouton_annuler = tk.Button(
+        #     frame_boutons, text="Annuler", command=self.annuler, bg='orange')
+        # bouton_annuler.pack(side='right')
+
 
 #
     def valider(self):

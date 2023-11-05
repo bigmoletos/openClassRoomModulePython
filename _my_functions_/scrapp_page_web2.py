@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import csv
 
-from controle_saisie_nom_fichier import controle_saisie_fichier_de_sortie()
+from controle_saisie_nom_fichier import controle_saisie_fichier_de_sortie
 
 
 def web_scrapping(url, output_format):

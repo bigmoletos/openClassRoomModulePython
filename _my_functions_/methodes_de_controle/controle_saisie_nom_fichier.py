@@ -3,7 +3,7 @@ import re
 from colorama import Fore, Style
 
 
-def controle_saisie_fichier_de_sortie() : 
+def controle_saisie_fichier_de_sortie():
     """controle de la saisie du fichier de sortie afin d'avoir un nom:
     sans caractéres spéciaux
     espace au début ni à la fin

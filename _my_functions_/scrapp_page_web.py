@@ -3,12 +3,14 @@ import csv, json
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
 # from methodes_de_controle import controle_saisie_nom_fichier, controle_saisie_url
-from methodes_de_controle import *
+from methodes_de_controle.controle_saisie_url import controle_saisie_url
+from methodes_de_controle.controle_saisie_nom_fichier import controle_saisie_fichier_de_sortie
+
 
 def scrapp_page_web():
     """ copie le contenu d'une page web et le copie dans un fichier output.html
     idealemenent il faudrait pourvoir choisir la sortie du fichier 
-    par ex en txt, json ou csv
+    par ex en txt, json ou csvscra
 
     """
     while True:
@@ -26,12 +28,14 @@ tapez votre choix:    """
 
             # Demander à l'utilisateur l'URL de la page web à scraper
             url=controle_saisie_url()
+
             # url = input("Veuillez entrer l'URL de la page web à scraper (par défaut https://www.google.com) : ")
             # if url == '':
             #     url = "https://www.google.com"
             # Demander à l'utilisateur le nom du fichier de sortie
             # nom_fichier = input("Veuillez entrer le nom du fichier de sortie : ")
-            nom_fichier=controle_saisie_nom_fichier
+            # controle_saisie_fichier_de_sortie()
+            nom_fichier=controle_saisie_fichier_de_sortie()
             print(f"Résumé de vos choix: \n Type de sortie {my_choice_type_fichier} \n Nom du fichier {nom_fichier}.{my_extension_fichier}")
             
             

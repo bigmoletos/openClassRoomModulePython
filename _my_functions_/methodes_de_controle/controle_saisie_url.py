@@ -1,5 +1,5 @@
 """controle de saisie d'une url"""
-import re
+# import re
 from urllib.parse import urlparse, urlunparse
 import validators.url
 from colorama import Fore, Style
